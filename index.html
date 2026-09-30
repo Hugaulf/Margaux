@@ -28,6 +28,7 @@
     html,body{
       margin:0;
       width:100%;
+      height:100%;
       min-height:100%;
       background:
         radial-gradient(circle at 15% 10%, rgba(255,117,168,.18), transparent 28%),
@@ -46,6 +47,7 @@
     .app{
       position:relative;
       width:100%;
+      height:100svh;
       min-height:100svh;
       padding:
         max(20px, env(safe-area-inset-top))
@@ -84,7 +86,9 @@
 
     .card{
       width:min(100%,430px);
-      min-height:min(690px, calc(100svh - 32px));
+      height:min(690px, calc(100svh - 40px));
+      min-height:0;
+      max-height:calc(100svh - 40px);
       position:relative;
       overflow:hidden;
       border:1px solid rgba(255,255,255,.75);
@@ -112,6 +116,7 @@
       font-weight:800;
       letter-spacing:.04em;
       text-transform:uppercase;
+      flex-shrink:0;
     }
 
     .dot{
@@ -128,6 +133,7 @@
       line-height:.98;
       letter-spacing:-.055em;
       max-width:320px;
+      flex-shrink:0;
     }
 
     .lead{
@@ -136,12 +142,13 @@
       color:var(--muted);
       font-size:15px;
       line-height:1.5;
+      flex-shrink:0;
     }
 
     .playground{
       position:relative;
       flex:1;
-      min-height:280px;
+      min-height:220px;
       margin-top:20px;
       border-radius:24px;
       border:1px dashed rgba(124,77,255,.16);
@@ -253,6 +260,7 @@
       font-size:15px;
       position:relative;
       z-index:8;
+      flex-shrink:0;
     }
 
     #deleteBtn:active{
@@ -265,20 +273,30 @@
       color:#9b94a7;
       font-size:11px;
       line-height:1.4;
+      flex-shrink:0;
     }
 
     .success{
       position:absolute;
       inset:0;
+      width:100%;
+      height:100%;
+      max-height:100%;
       z-index:20;
       display:flex;
       flex-direction:column;
       align-items:center;
       justify-content:flex-start;
       text-align:center;
-      padding:30px 26px 36px;
+      padding:
+        max(28px, env(safe-area-inset-top))
+        26px
+        max(38px, env(safe-area-inset-bottom));
+      overflow-x:hidden;
       overflow-y:auto;
+      overscroll-behavior:contain;
       -webkit-overflow-scrolling:touch;
+      touch-action:pan-y;
       background:
         radial-gradient(circle at 50% 30%,rgba(255,255,255,.98),rgba(248,244,255,.98));
       opacity:0;
@@ -291,6 +309,18 @@
       opacity:1;
       visibility:visible;
       transform:scale(1);
+    }
+
+    .success > *{
+      flex-shrink:0;
+    }
+
+    .success::after{
+      content:"";
+      display:block;
+      width:1px;
+      height:20px;
+      flex:0 0 20px;
     }
 
     .success-icon{
@@ -318,14 +348,6 @@
       letter-spacing:-.045em;
     }
 
-    .success p{
-      margin:0;
-      max-width:320px;
-      color:#6f687b;
-      font-size:15px;
-      line-height:1.6;
-    }
-
     .success strong{
       color:#2b2334;
     }
@@ -343,6 +365,7 @@
 
     .love-note{
       margin-top:18px;
+      width:100%;
       max-width:320px;
       padding:15px 16px;
       border-radius:18px;
@@ -402,9 +425,28 @@
     }
 
     @media (max-height:690px){
-      .card{ min-height:calc(100svh - 24px); padding-top:18px; }
+      .card{
+        height:calc(100svh - 24px);
+        max-height:calc(100svh - 24px);
+        padding-top:18px;
+      }
       h1{ margin-top:16px; font-size:34px; }
-      .playground{ min-height:220px; margin-top:14px; }
+      .playground{ min-height:180px; margin-top:14px; }
+      .success{
+        padding-top:24px;
+        padding-left:20px;
+        padding-right:20px;
+        padding-bottom:34px;
+      }
+      .success-icon{
+        width:70px;
+        height:70px;
+        font-size:38px;
+      }
+      .success h2{
+        margin-top:18px;
+        font-size:30px;
+      }
     }
   </style>
 </head>
@@ -611,6 +653,7 @@
           e.stopPropagation();
         }
 
+        success.scrollTop = 0;
         success.classList.add('show');
         launchConfetti();
         launchHearts();
