@@ -339,6 +339,45 @@
       font-weight:850;
     }
 
+    .love-note{
+      margin-top:18px;
+      max-width:320px;
+      padding:15px 16px;
+      border-radius:18px;
+      background:linear-gradient(135deg,rgba(255,117,168,.10),rgba(124,77,255,.09));
+      border:1px solid rgba(124,77,255,.10);
+      color:#5f566d;
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .love-note strong{
+      color:#2b2334;
+    }
+
+    .floating-heart{
+      position:fixed;
+      left:50%;
+      bottom:18%;
+      z-index:60;
+      pointer-events:none;
+      font-size:18px;
+      opacity:0;
+      animation:heartFloat 2.4s ease-out forwards;
+    }
+
+    @keyframes heartFloat{
+      0%{
+        transform:translate(-50%,20px) scale(.6) rotate(0deg);
+        opacity:0;
+      }
+      15%{ opacity:1; }
+      100%{
+        transform:translate(calc(-50% + var(--hx)),calc(-42vh + var(--hy))) scale(1.25) rotate(var(--hr));
+        opacity:0;
+      }
+    }
+
     .confetti{
       position:fixed;
       width:9px;
@@ -407,15 +446,27 @@
       </p>
 
       <div class="success" id="success">
-        <div class="success-icon">✓</div>
+        <div class="success-icon">♡</div>
         <h2>Énorme cap franchi.</h2>
         <p>
           Je sais que <strong>sur le moment, c’est dur</strong>.
-          Mais parfois, il faut savoir se faire un peu violence pour arrêter de revenir
-          vers ce qui nous fait du mal et commencer à aller mieux.
+          Et je sais aussi qu’on peut avoir envie de revenir vers ce qu’on connaît,
+          même quand ça nous fait plus de mal que de bien.
           <br><br>
-          Aujourd’hui, tu viens de choisir <strong>toi</strong>.
+          Mais tu mérites de retrouver du <strong>calme, de la légèreté et de la douceur</strong>.
+          Aujourd’hui, tu viens de choisir <strong>toi</strong>, et c’est déjà beaucoup.
         </p>
+
+        <div class="love-note">
+          Tu n’as pas à traverser ça toute seule.
+          Il y a des gens autour de toi qui <strong>tiennent énormément à toi</strong>,
+          qui veulent te voir bien, et qui seront là pour les moments nuls
+          comme pour les petites victoires.
+          <br><br>
+          Et si t’as envie d’écrire à quelqu’un, <strong>écris-moi plutôt</strong>.
+          Même juste pour raconter n’importe quoi.
+        </div>
+
         <div class="badge">Margaux 1 — Mauvaise décision 0</div>
       </div>
     </section>
@@ -530,6 +581,28 @@
         }
       }
 
+      function launchHearts() {
+        const hearts = ['♡','♥','♡','♡','♥'];
+
+        for (let i = 0; i < 24; i++) {
+          const heart = document.createElement('span');
+          heart.className = 'floating-heart';
+          heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+          heart.style.left = (18 + Math.random() * 64) + 'vw';
+          heart.style.color = Math.random() > .5 ? '#ff75a8' : '#7c4dff';
+          heart.style.setProperty('--hx', ((Math.random() - .5) * 120) + 'px');
+          heart.style.setProperty('--hy', ((Math.random() - .5) * 80) + 'px');
+          heart.style.setProperty('--hr', ((Math.random() - .5) * 50) + 'deg');
+          heart.style.animationDelay = (Math.random() * .55) + 's';
+
+          document.body.appendChild(heart);
+
+          setTimeout(() => {
+            heart.remove();
+          }, 3200);
+        }
+      }
+
       function celebrate(e) {
         if (e) {
           e.preventDefault();
@@ -538,6 +611,7 @@
 
         success.classList.add('show');
         launchConfetti();
+        launchHearts();
 
         if ('vibrate' in navigator) {
           navigator.vibrate([70,40,100]);
