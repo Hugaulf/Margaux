@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f3ff">
+  <title>Margaux, on réfléchit deux secondes</title>
+
+  <style>
+    :root{
+      --bg:#f7f3ff;
+      --card:rgba(255,255,255,.86);
+      --text:#17131f;
+      --muted:#706a7c;
+      --purple:#7c4dff;
+      --purple-dark:#5b2ee6;
+      --pink:#ff75a8;
+      --green:#20b981;
+      --border:rgba(80,52,130,.10);
+      --shadow:0 20px 60px rgba(76,49,126,.14);
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,body{
+      margin:0;
+      width:100%;
+      min-height:100%;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255,117,168,.18), transparent 28%),
+        radial-gradient(circle at 85% 18%, rgba(124,77,255,.18), transparent 28%),
+        linear-gradient(180deg,#faf8ff 0%,#f4efff 100%);
+      color:var(--text);
+      font-family:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overscroll-behavior:none;
+    }
+
+    body{
+      min-height:100svh;
+      overflow:hidden;
+    }
+
+    .app{
+      position:relative;
+      width:100%;
+      min-height:100svh;
+      padding:
+        max(20px, env(safe-area-inset-top))
+        16px
+        max(20px, env(safe-area-inset-bottom));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      isolation:isolate;
+    }
+
+    .blob{
+      position:absolute;
+      border-radius:999px;
+      filter:blur(8px);
+      opacity:.55;
+      pointer-events:none;
+      z-index:-1;
+    }
+
+    .blob.one{
+      width:160px;
+      height:160px;
+      background:#ffb6d0;
+      top:7%;
+      left:-60px;
+    }
+
+    .blob.two{
+      width:190px;
+      height:190px;
+      background:#c7b2ff;
+      right:-80px;
+      bottom:8%;
+    }
+
+    .card{
+      width:min(100%,430px);
+      min-height:min(690px, calc(100svh - 32px));
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.75);
+      background:var(--card);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:24px 20px 20px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      align-self:flex-start;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid var(--border);
+      color:#675f73;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--pink),var(--purple));
+      box-shadow:0 0 0 5px rgba(124,77,255,.08);
+    }
+
+    h1{
+      margin:22px 0 10px;
+      font-size:clamp(32px,10vw,46px);
+      line-height:.98;
+      letter-spacing:-.055em;
+      max-width:320px;
+    }
+
+    .lead{
+      margin:0;
+      max-width:340px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.5;
+    }
+
+    .playground{
+      position:relative;
+      flex:1;
+      min-height:280px;
+      margin-top:20px;
+      border-radius:24px;
+      border:1px dashed rgba(124,77,255,.16);
+      background:
+        linear-gradient(rgba(255,255,255,.52),rgba(255,255,255,.52)),
+        radial-gradient(circle at 30% 20%,rgba(255,117,168,.12),transparent 32%);
+      overflow:hidden;
+      touch-action:manipulation;
+    }
+
+    .avoid-zone-label{
+      position:absolute;
+      top:15px;
+      left:16px;
+      right:16px;
+      color:#9a92a7;
+      font-size:12px;
+      font-weight:700;
+      text-align:center;
+      pointer-events:none;
+    }
+
+    button{
+      border:0;
+      font:inherit;
+      cursor:pointer;
+      -webkit-appearance:none;
+      appearance:none;
+      touch-action:manipulation;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+
+    #exBtn{
+      position:absolute;
+      left:50%;
+      top:45%;
+      transform:translate(-50%,-50%);
+      width:min(82%,290px);
+      min-height:58px;
+      padding:14px 18px;
+      border-radius:18px;
+      background:#fff;
+      color:#2d2437;
+      border:1px solid rgba(73,52,105,.10);
+      box-shadow:0 12px 30px rgba(65,44,102,.12);
+      font-weight:800;
+      font-size:15px;
+      transition:left .22s cubic-bezier(.2,.8,.2,1),
+                 top .22s cubic-bezier(.2,.8,.2,1),
+                 transform .12s ease;
+      z-index:3;
+    }
+
+    #exBtn:active{
+      transform:translate(-50%,-50%) scale(.97);
+    }
+
+    .error{
+      position:absolute;
+      left:14px;
+      right:14px;
+      bottom:14px;
+      min-height:48px;
+      padding:12px 13px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:rgba(255,241,246,.97);
+      color:#8d3156;
+      border:1px solid rgba(255,117,168,.24);
+      box-shadow:0 10px 25px rgba(117,46,77,.08);
+      font-size:13px;
+      font-weight:750;
+      opacity:0;
+      transform:translateY(8px);
+      transition:.2s ease;
+      pointer-events:none;
+      z-index:4;
+    }
+
+    .error.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .error .icon{
+      width:28px;
+      height:28px;
+      flex:none;
+      border-radius:10px;
+      display:grid;
+      place-items:center;
+      background:#fff;
+      font-size:15px;
+    }
+
+    #deleteBtn{
+      width:100%;
+      min-height:60px;
+      margin-top:15px;
+      padding:14px 18px;
+      border-radius:19px;
+      background:linear-gradient(135deg,var(--purple),var(--purple-dark));
+      color:white;
+      box-shadow:0 14px 30px rgba(99,59,222,.28);
+      font-weight:850;
+      font-size:15px;
+      position:relative;
+      z-index:8;
+    }
+
+    #deleteBtn:active{
+      transform:scale(.985);
+    }
+
+    .footnote{
+      margin:12px 0 0;
+      text-align:center;
+      color:#9b94a7;
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .success{
+      position:absolute;
+      inset:0;
+      z-index:20;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:34px 26px;
+      background:
+        radial-gradient(circle at 50% 30%,rgba(255,255,255,.98),rgba(248,244,255,.98));
+      opacity:0;
+      visibility:hidden;
+      transform:scale(.98);
+      transition:.3s ease;
+    }
+
+    .success.show{
+      opacity:1;
+      visibility:visible;
+      transform:scale(1);
+    }
+
+    .success-icon{
+      width:94px;
+      height:94px;
+      border-radius:30px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#a487ff,#6f45ff);
+      box-shadow:0 18px 45px rgba(99,59,222,.28);
+      color:#fff;
+      font-size:44px;
+      animation:pop .65s cubic-bezier(.17,.89,.32,1.49) both;
+    }
+
+    @keyframes pop{
+      0%{ transform:scale(.3) rotate(-12deg); opacity:0; }
+      100%{ transform:scale(1) rotate(0); opacity:1; }
+    }
+
+    .success h2{
+      margin:24px 0 12px;
+      font-size:34px;
+      line-height:1;
+      letter-spacing:-.045em;
+    }
+
+    .success p{
+      margin:0;
+      max-width:320px;
+      color:#6f687b;
+      font-size:15px;
+      line-height:1.6;
+    }
+
+    .success strong{
+      color:#2b2334;
+    }
+
+    .badge{
+      margin-top:22px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#ebfff7;
+      color:#13865e;
+      border:1px solid rgba(32,185,129,.16);
+      font-size:12px;
+      font-weight:850;
+    }
+
+    .confetti{
+      position:fixed;
+      width:9px;
+      height:15px;
+      border-radius:3px;
+      pointer-events:none;
+      z-index:50;
+      animation:confettiFall 1.8s ease-out forwards;
+    }
+
+    @keyframes confettiFall{
+      0%{
+        transform:translate3d(0,-10vh,0) rotate(0deg);
+        opacity:1;
+      }
+      100%{
+        transform:translate3d(var(--x),110vh,0) rotate(var(--r));
+        opacity:0;
+      }
+    }
+
+    @media (max-height:690px){
+      .card{ min-height:calc(100svh - 24px); padding-top:18px; }
+      h1{ margin-top:16px; font-size:34px; }
+      .playground{ min-height:220px; margin-top:14px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <div class="blob one"></div>
+    <div class="blob two"></div>
+
+    <section class="card">
+      <div class="eyebrow">
+        <span class="dot"></span>
+        Intervention amicale
+      </div>
+
+      <h1>Margaux.<br>Pose ce téléphone.</h1>
+
+      <p class="lead">
+        Deux chemins s'offrent à toi. Techniquement, un seul est vraiment disponible.
+      </p>
+
+      <div class="playground" id="playground">
+        <div class="avoid-zone-label">Zone à haut risque émotionnel</div>
+
+        <button id="exBtn" type="button">
+          Renvoyer un message à mon ex
+        </button>
+
+        <div class="error" id="errorBox">
+          <span class="icon">⚠</span>
+          <span id="errorText">Erreur inconnue.</span>
+        </div>
+      </div>
+
+      <button id="deleteBtn" type="button">
+        Supprimer le numéro de mon ex
+      </button>
+
+      <p class="footnote">
+        Aucun ex n’a été contacté pendant la création de cette page.
+      </p>
+
+      <div class="success" id="success">
+        <div class="success-icon">✓</div>
+        <h2>Énorme cap franchi.</h2>
+        <p>
+          Je sais que <strong>sur le moment, c’est dur</strong>.
+          Mais parfois, il faut savoir se faire un peu violence pour arrêter de revenir
+          vers ce qui nous fait du mal et commencer à aller mieux.
+          <br><br>
+          Aujourd’hui, tu viens de choisir <strong>toi</strong>.
+        </p>
+        <div class="badge">Margaux 1 — Mauvaise décision 0</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const exBtn = document.getElementById('exBtn');
+      const playground = document.getElementById('playground');
+      const errorBox = document.getElementById('errorBox');
+      const errorText = document.getElementById('errorText');
+      const deleteBtn = document.getElementById('deleteBtn');
+      const success = document.getElementById('success');
+
+      const errors = [
+        "Erreur 403 : accès à ton ex refusé.",
+        "Action bloquée par ton futur toi.",
+        "Connexion impossible : dignité détectée.",
+        "Le serveur recommande fortement de ne pas faire ça.",
+        "Non Margaux. Vraiment.",
+        "Requête annulée : rechute émotionnelle potentielle.",
+        "Ce bouton refuse de participer à cette décision.",
+        "Erreur système : ton ex n’est pas une bonne idée.",
+        "Tentative détectée. On va faire comme si on n’avait rien vu.",
+        "Message non envoyé. Et c’est probablement mieux comme ça."
+      ];
+
+      let tries = 0;
+      let locked = false;
+
+      function showError() {
+        errorText.textContent = errors[tries % errors.length];
+        errorBox.classList.remove('show');
+        void errorBox.offsetWidth;
+        errorBox.classList.add('show');
+        tries++;
+      }
+
+      function moveButton() {
+        const zone = playground.getBoundingClientRect();
+        const btn = exBtn.getBoundingClientRect();
+
+        const pad = 14;
+        const topSafe = 68;
+        const bottomSafe = 88;
+
+        const minX = btn.width / 2 + pad;
+        const maxX = zone.width - btn.width / 2 - pad;
+        const minY = btn.height / 2 + topSafe;
+        const maxY = zone.height - btn.height / 2 - bottomSafe;
+
+        const x = minX + Math.random() * Math.max(1, maxX - minX);
+        const y = minY + Math.random() * Math.max(1, maxY - minY);
+
+        exBtn.style.left = x + 'px';
+        exBtn.style.top = y + 'px';
+      }
+
+      function dodge(e) {
+        if (locked) return;
+        locked = true;
+
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        moveButton();
+        showError();
+
+        if ('vibrate' in navigator) {
+          navigator.vibrate(30);
+        }
+
+        setTimeout(() => {
+          locked = false;
+        }, 220);
+      }
+
+      exBtn.addEventListener('pointerdown', dodge);
+
+      exBtn.addEventListener('click', (e) => {
+        if (!window.PointerEvent) dodge(e);
+      });
+
+      if (window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
+        exBtn.addEventListener('mouseenter', () => {
+          moveButton();
+          showError();
+        });
+      }
+
+      function launchConfetti() {
+        const colors = ['#7c4dff','#ff75a8','#20b981','#ffd166','#9b87f5','#ff9f68'];
+
+        for (let i = 0; i < 80; i++) {
+          const piece = document.createElement('span');
+          piece.className = 'confetti';
+          piece.style.left = Math.random() * 100 + 'vw';
+          piece.style.top = (-10 - Math.random() * 20) + 'px';
+          piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+          piece.style.setProperty('--x', ((Math.random() - .5) * 240) + 'px');
+          piece.style.setProperty('--r', ((Math.random() - .5) * 900) + 'deg');
+          piece.style.animationDelay = (Math.random() * .35) + 's';
+          piece.style.animationDuration = (1.35 + Math.random() * 1.1) + 's';
+
+          document.body.appendChild(piece);
+
+          setTimeout(() => {
+            piece.remove();
+          }, 2800);
+        }
+      }
+
+      function celebrate(e) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        success.classList.add('show');
+        launchConfetti();
+
+        if ('vibrate' in navigator) {
+          navigator.vibrate([70,40,100]);
+        }
+      }
+
+      deleteBtn.addEventListener('pointerup', celebrate);
+
+      deleteBtn.addEventListener('click', (e) => {
+        if (!window.PointerEvent) celebrate(e);
+      });
+    })();
+  </script>
+</body>
+</html>
